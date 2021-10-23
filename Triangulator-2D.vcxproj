@@ -108,9 +108,9 @@
       <ConformanceMode>true</ConformanceMode>
     </ClCompile>
     <Link>
-      <SubSystem>Console</SubSystem>
+      <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>sfml-graphics-d.lib;sfml-window-d.lib;sfml-system-d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>sfml-main.lib;sfml-graphics-d.lib;sfml-window-d.lib;sfml-system-d.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ProgramDatabaseFile>$(SolutionDir)$(Platform)\$(Configuration)\</ProgramDatabaseFile>
     </Link>
     <PreBuildEvent>
@@ -118,7 +118,8 @@
 copy /Y "$(SolutionDir)Libraries\dll\sfml-audio-d-2.dll" "$(TargetDir)"
 copy /Y "$(SolutionDir)Libraries\dll\sfml-graphics-d-2.dll" "$(TargetDir)"
 copy /Y "$(SolutionDir)Libraries\dll\sfml-window-d-2.dll" "$(TargetDir)"
-copy /Y "$(SolutionDir)Libraries\dll\sfml-system-d-2.dll" "$(TargetDir)"</Command>
+copy /Y "$(SolutionDir)Libraries\dll\sfml-system-d-2.dll" "$(TargetDir)"
+copy /Y "$(SolutionDir)src\RussoOne-Regular.ttf" "$(TargetDir)"</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -131,11 +132,11 @@ copy /Y "$(SolutionDir)Libraries\dll\sfml-system-d-2.dll" "$(TargetDir)"</Comman
       <ConformanceMode>true</ConformanceMode>
     </ClCompile>
     <Link>
-      <SubSystem>Console</SubSystem>
+      <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>sfml-graphics.lib;sfml-window.lib;sfml-system.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>sfml-main.lib;sfml-graphics.lib;sfml-window.lib;sfml-system.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ProgramDatabaseFile>$(SolutionDir)$(Platform)\$(Configuration)\</ProgramDatabaseFile>
     </Link>
     <PreBuildEvent>
@@ -143,7 +144,8 @@ copy /Y "$(SolutionDir)Libraries\dll\sfml-system-d-2.dll" "$(TargetDir)"</Comman
 copy /Y "$(SolutionDir)Libraries\dll\sfml-audio-2.dll" "$(TargetDir)"
 copy /Y "$(SolutionDir)Libraries\dll\sfml-graphics-2.dll" "$(TargetDir)"
 copy /Y "$(SolutionDir)Libraries\dll\sfml-window-2.dll" "$(TargetDir)"
-copy /Y "$(SolutionDir)Libraries\dll\sfml-system-2.dll" "$(TargetDir)"</Command>
+copy /Y "$(SolutionDir)Libraries\dll\sfml-system-2.dll" "$(TargetDir)"
+copy /Y "$(SolutionDir)src\RussoOne-Regular.ttf" "$(TargetDir)"</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -154,9 +156,9 @@ copy /Y "$(SolutionDir)Libraries\dll\sfml-system-2.dll" "$(TargetDir)"</Command>
       <ConformanceMode>true</ConformanceMode>
     </ClCompile>
     <Link>
-      <SubSystem>Console</SubSystem>
+      <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>sfml-graphics-d.lib;sfml-window-d.lib;sfml-system-d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>sfml-main.lib;sfml-graphics-d.lib;sfml-window-d.lib;sfml-system-d.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ProgramDatabaseFile>$(SolutionDir)$(Platform)\$(Configuration)\</ProgramDatabaseFile>
     </Link>
     <PreBuildEvent>
@@ -164,7 +166,8 @@ copy /Y "$(SolutionDir)Libraries\dll\sfml-system-2.dll" "$(TargetDir)"</Command>
 copy /Y "$(SolutionDir)Libraries\dll\sfml-audio-d-2.dll" "$(TargetDir)"
 copy /Y "$(SolutionDir)Libraries\dll\sfml-graphics-d-2.dll" "$(TargetDir)"
 copy /Y "$(SolutionDir)Libraries\dll\sfml-window-d-2.dll" "$(TargetDir)"
-copy /Y "$(SolutionDir)Libraries\dll\sfml-system-d-2.dll" "$(TargetDir)"</Command>
+copy /Y "$(SolutionDir)Libraries\dll\sfml-system-d-2.dll" "$(TargetDir)"
+copy /Y "$(SolutionDir)src\RussoOne-Regular.ttf" "$(TargetDir)"</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -177,11 +180,11 @@ copy /Y "$(SolutionDir)Libraries\dll\sfml-system-d-2.dll" "$(TargetDir)"</Comman
       <ConformanceMode>true</ConformanceMode>
     </ClCompile>
     <Link>
-      <SubSystem>Console</SubSystem>
+      <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>sfml-graphics.lib;sfml-window.lib;sfml-system.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>sfml-main.lib;sfml-graphics.lib;sfml-window.lib;sfml-system.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ProgramDatabaseFile>$(SolutionDir)$(Platform)\$(Configuration)\</ProgramDatabaseFile>
     </Link>
     <PreBuildEvent>
@@ -189,7 +192,8 @@ copy /Y "$(SolutionDir)Libraries\dll\sfml-system-d-2.dll" "$(TargetDir)"</Comman
 copy /Y "$(SolutionDir)Libraries\dll\sfml-audio-2.dll" "$(TargetDir)"
 copy /Y "$(SolutionDir)Libraries\dll\sfml-graphics-2.dll" "$(TargetDir)"
 copy /Y "$(SolutionDir)Libraries\dll\sfml-window-2.dll" "$(TargetDir)"
-copy /Y "$(SolutionDir)Libraries\dll\sfml-system-2.dll" "$(TargetDir)"</Command>
+copy /Y "$(SolutionDir)Libraries\dll\sfml-system-2.dll" "$(TargetDir)"
+copy /Y "$(SolutionDir)src\RussoOne-Regular.ttf" "$(TargetDir)"</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>

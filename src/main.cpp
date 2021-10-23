@@ -1,5 +1,5 @@
-#include <iostream>
 #include "SFML/Graphics.hpp"
+#include <iostream>
 
 #define PI 3.14159265359
 
@@ -10,6 +10,8 @@ struct Line {
 };
 
 enum LineMode {ToPrevious, ToFirst};
+
+enum class Phase {One=1, Two};
 
 void createPoint(std::vector<sf::CircleShape>& points, float x, float y);
 void createLine(std::vector<sf::CircleShape>& points, std::vector<Line>& lines, LineMode lineMode);
@@ -30,26 +32,38 @@ int main()
     std::vector<Line> lines = {};
     
     sf::Font font;
-    if (!font.loadFromFile("src\\RussoOne-Regular.ttf"))
+    if (!font.loadFromFile("RussoOne-Regular.ttf"))
     {
         std::cout << "Error loading font" << std::endl;
     }
+
     sf::Text fpsText;
-    fpsText.setFont(font); // font is a sf::Font
-
+    fpsText.setFont(font);
     fpsText.setString("Triangulator-2D");
-
-    // set the character size
-    fpsText.setCharacterSize(24); // in pixels, not points!
-
-    // set the color
+    fpsText.setCharacterSize(24);
     fpsText.setFillColor(sf::Color::White);
+
+    sf::Text debugText;
+    debugText.setFont(font);
+    debugText.setCharacterSize(24);
+    debugText.setFillColor(sf::Color::White);
+    debugText.setOrigin(0, 24);
+    debugText.setPosition(5, height-5);
+
+    Phase phase = Phase::One;
+
+    sf::Text phaseText;
+    phaseText.setFont(font);
+    phaseText.setCharacterSize(24);
+    phaseText.setFillColor(sf::Color::White);
 
     while (window.isOpen())
     {
+        // FRAME TIMER
         sf::Clock clock;
         float dt = 0.f;
 
+        // INPUT
         sf::Event event;
         while (window.pollEvent(event))
         {
@@ -58,33 +72,63 @@ int main()
     
             if (event.type == sf::Event::MouseButtonReleased)
             {
-                sf::Vector2i position = sf::Mouse::getPosition();
-                createPoint(points, position.x, position.y);
-                if (points.size() > 1) {
-                    createLine(points, lines, ToPrevious);
+                if (phase == Phase::One) {
+                    sf::Vector2i position = sf::Mouse::getPosition();
+                    createPoint(points, position.x, position.y);
+                    if (points.size() > 1) {
+                        createLine(points, lines, ToPrevious);
+                    }
                 }
             }
 
             if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
             {
-                createLine(points, lines, ToFirst);
+                if (phase == Phase::One) {
+                    phase = Phase::Two;
+                    createLine(points, lines, ToFirst);
+                }
             }
-            else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
+            else if (sf::Keyboard::isKeyPressed(sf::Keyboard::BackSpace))
             {
-                // move right...
+                phase = Phase::One;
+                points.clear();
+                lines.clear();
+            }
+            else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Q))
+            {
+                std::cout << "Points: " << points.size() << "  |  Lines: " << lines.size() << std::endl;
             }
             else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
             {
                 window.close();
             }
         }
+
+        // UPDATE
+        switch (phase) {
+        case Phase::One:
+            phaseText.setString("Phase: 1");
+            break;
+        case Phase::Two:
+            phaseText.setString("Phase: 2");
+            break;
+        default:
+            break;
+        }
+        phaseText.setOrigin(phaseText.getLocalBounds().width/2, phaseText.getLocalBounds().height / 2);
+        phaseText.setPosition(width / 2, 5);
+        debugText.setString("Points: " + std::to_string(points.size()) + "  |  Lines: " + std::to_string(lines.size()));
         
+        // RENDER
         window.clear(sf::Color(18, 33, 43)); // Color background
         for (int i = 0; i < lines.size(); i++) window.draw(lines[i].line);
         for (int i = 0; i < points.size(); i++) window.draw(points[i]);
         window.draw(fpsText);
+        window.draw(phaseText);
+        window.draw(debugText);
         window.display();
 
+        //FPS COUNTER
         dt = clock.restart().asSeconds();
         fpsText.setString("FPS: "+std::to_string((int)(1.0f/dt)));
     }
@@ -100,22 +144,23 @@ void createPoint(std::vector<sf::CircleShape>& points, float x, float y) {
     points.push_back(point);
 }
 
-
 void createLine(std::vector<sf::CircleShape>& points, std::vector<Line>& lines, LineMode lineMode) {
-    Line line = Line();
-    line.pointA = (lineMode == ToPrevious) ? points.size() - 2 : 0;
-    line.pointB = points.size() - 1;
+    if (points.size() > 1) {
+        Line line = Line();
+        line.pointA = (lineMode == ToPrevious) ? points.size() - 2 : 0;
+        line.pointB = points.size() - 1;
 
-    float distance = calculateDistance(points[line.pointA].getPosition(), points[line.pointB].getPosition());
-    sf::Vector2f position = calculateMidpoint(points[line.pointA].getPosition(), points[line.pointB].getPosition());
-    double angle = calculateLineAngle(points[line.pointA].getPosition(), points[line.pointB].getPosition());
-    sf::RectangleShape rectangle(sf::Vector2f(distance, 5.f));
-    rectangle.setOrigin(distance/2.0f, 2.5f);
-    rectangle.setPosition(position);
-    rectangle.rotate(angle);
-    rectangle.setFillColor(sf::Color::Red);
-    line.line = rectangle;
-    lines.push_back(line);
+        float distance = calculateDistance(points[line.pointA].getPosition(), points[line.pointB].getPosition());
+        sf::Vector2f position = calculateMidpoint(points[line.pointA].getPosition(), points[line.pointB].getPosition());
+        double angle = calculateLineAngle(points[line.pointA].getPosition(), points[line.pointB].getPosition());
+        sf::RectangleShape rectangle(sf::Vector2f(distance, 5.f));
+        rectangle.setOrigin(distance / 2.0f, 2.5f);
+        rectangle.setPosition(position);
+        rectangle.rotate(angle);
+        rectangle.setFillColor(sf::Color::Red);
+        line.line = rectangle;
+        lines.push_back(line);
+    }
 }
 
 float calculateDistance(sf::Vector2f a, sf::Vector2f b) {
