@@ -72,11 +72,11 @@ int main()
     
             if (event.type == sf::Event::MouseButtonReleased)
             {
-                if (phase == Phase::One) {
-                    sf::Vector2i position = sf::Mouse::getPosition();
-                    createPoint(points, position.x, position.y);
-                    if (points.size() > 1) {
-                        createLine(points, lines, ToPrevious);
+                if (event.mouseButton.button == sf::Mouse::Left) {
+                    if (phase == Phase::One) {
+                        sf::Vector2i position = sf::Mouse::getPosition();
+                        createPoint(points, position.x, position.y);
+                        if (points.size() > 1) createLine(points, lines, ToPrevious);
                     }
                 }
             }
