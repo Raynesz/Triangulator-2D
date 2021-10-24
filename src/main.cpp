@@ -21,12 +21,13 @@ double calculateLineAngle(sf::Vector2f a, sf::Vector2f b);
 
 int main()
 {
-    float width = sf::VideoMode::getDesktopMode().width;
-    float height = sf::VideoMode::getDesktopMode().height;
+    float screenWidth = sf::VideoMode::getDesktopMode().width;
+    float screenHeight = sf::VideoMode::getDesktopMode().height;
     sf::ContextSettings settings;
     settings.antialiasingLevel = 8;
-    sf::RenderWindow window(sf::VideoMode(width, height), "Triangulator-2D", sf::Style::Fullscreen, settings);
+    sf::RenderWindow window(sf::VideoMode(screenWidth, screenHeight), "Triangulator-2D", sf::Style::Fullscreen, settings);
     window.setVerticalSyncEnabled(true);
+    window.setKeyRepeatEnabled(false);
 
     std::vector<sf::CircleShape> points = {};
     std::vector<Line> lines = {};
@@ -37,18 +38,20 @@ int main()
         std::cout << "Error loading font" << std::endl;
     }
 
-    sf::Text fpsText;
-    fpsText.setFont(font);
-    fpsText.setString("Triangulator-2D");
-    fpsText.setCharacterSize(24);
-    fpsText.setFillColor(sf::Color::White);
+    sf::Text titleText;
+    titleText.setFont(font);
+    titleText.setString("Triangulator-2D");
+    titleText.setCharacterSize(28);
+    titleText.setFillColor(sf::Color::White);
+    titleText.setPosition(5, 5);
 
     sf::Text debugText;
     debugText.setFont(font);
     debugText.setCharacterSize(24);
     debugText.setFillColor(sf::Color::White);
+    debugText.setString("Points: " + std::to_string(points.size()) + "  |  Lines: " + std::to_string(lines.size()));
     debugText.setOrigin(0, 24);
-    debugText.setPosition(5, height-5);
+    debugText.setPosition(5, screenHeight-5);
 
     Phase phase = Phase::One;
 
@@ -56,6 +59,22 @@ int main()
     phaseText.setFont(font);
     phaseText.setCharacterSize(24);
     phaseText.setFillColor(sf::Color::White);
+    phaseText.setString("Draw the convex hull of the area you want to triangulate.");
+    phaseText.setOrigin(phaseText.getLocalBounds().width / 2, phaseText.getLocalBounds().height / 2);
+    phaseText.setPosition(screenWidth / 2, 5);
+
+    sf::Text controlsText;
+    controlsText.setFont(font);
+    controlsText.setCharacterSize(22);
+    controlsText.setFillColor(sf::Color::White);
+    controlsText.setString("Left click: Place point | Right click: Erase point | Spacebar: Finish drawing | Backspace: Reset | Escape: Close application");
+    controlsText.setOrigin(controlsText.getLocalBounds().width / 2, 22);
+    controlsText.setPosition(screenWidth / 2, screenHeight - 5);
+
+    bool showPoints = true;
+    bool showLines = true;
+    bool showTriangles = true;
+    bool showFps = true;
 
     while (window.isOpen())
     {
@@ -79,58 +98,73 @@ int main()
                         if (points.size() > 1) createLine(points, lines, ToPrevious);
                     }
                 }
-            }
-
-            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
-            {
-                if (phase == Phase::One) {
-                    phase = Phase::Two;
-                    createLine(points, lines, ToFirst);
+                else if (event.mouseButton.button == sf::Mouse::Right) {
+                    if (phase == Phase::One) {
+                        if (!lines.empty()) lines.pop_back();
+                        if (!points.empty()) points.pop_back();
+                    }
                 }
+                debugText.setString("Points: " + std::to_string(points.size()) + "  |  Lines: " + std::to_string(lines.size()));
+                std::cout << "mouse_input" << std::endl;
             }
-            else if (sf::Keyboard::isKeyPressed(sf::Keyboard::BackSpace))
-            {
-                phase = Phase::One;
-                points.clear();
-                lines.clear();
-            }
-            else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Q))
-            {
-                std::cout << "Points: " << points.size() << "  |  Lines: " << lines.size() << std::endl;
-            }
-            else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
-            {
-                window.close();
+            else if (event.type == sf::Event::KeyPressed) {
+                if (event.key.code == sf::Keyboard::Space) {
+                    if (phase == Phase::One) {
+                        phase = Phase::Two;
+                        phaseText.setString("Phase 2");
+                        controlsText.setString("Q: Show/Hide points | W: Show/Hide lines | E: Show/Hide triangles | Backspace: Reset | Escape: Close application");
+                        createLine(points, lines, ToFirst);
+                    }
+                }
+                else if (event.key.code == sf::Keyboard::BackSpace) {
+                    phase = Phase::One;
+                    phaseText.setString("Draw the convex hull of the area you want to triangulate.");
+                    controlsText.setString("Left click: Place point | Right click: Erase point | Spacebar: Finish drawing | Backspace: Reset | Escape: Close application");
+                    points.clear();
+                    lines.clear();
+                }
+                else if (event.key.code == sf::Keyboard::Q) {
+                    showPoints = !showPoints;
+                }
+                else if (event.key.code == sf::Keyboard::W) {
+                    showLines = !showLines;
+                }
+                else if (event.key.code == sf::Keyboard::E) {
+                    showTriangles = !showTriangles;
+                }
+                else if (event.key.code == sf::Keyboard::F) {
+                    showFps = !showFps;
+                }
+                else if (event.key.code == sf::Keyboard::N) {
+                    std::cout << "Points: " << points.size() << "  |  Lines: " << lines.size() << std::endl;
+                }
+                else if (event.key.code == sf::Keyboard::M) {
+                    
+                }
+                else if (event.key.code == sf::Keyboard::Escape) {
+                    window.close();
+                }
+                phaseText.setOrigin(phaseText.getLocalBounds().width / 2, phaseText.getLocalBounds().height / 2);
+                debugText.setString("Points: " + std::to_string(points.size()) + "  |  Lines: " + std::to_string(lines.size()));
+                controlsText.setOrigin(controlsText.getLocalBounds().width / 2, 22);
+                std::cout << "key_input" << std::endl;
             }
         }
-
-        // UPDATE
-        switch (phase) {
-        case Phase::One:
-            phaseText.setString("Phase: 1");
-            break;
-        case Phase::Two:
-            phaseText.setString("Phase: 2");
-            break;
-        default:
-            break;
-        }
-        phaseText.setOrigin(phaseText.getLocalBounds().width/2, phaseText.getLocalBounds().height / 2);
-        phaseText.setPosition(width / 2, 5);
-        debugText.setString("Points: " + std::to_string(points.size()) + "  |  Lines: " + std::to_string(lines.size()));
         
         // RENDER
         window.clear(sf::Color(18, 33, 43)); // Color background
-        for (int i = 0; i < lines.size(); i++) window.draw(lines[i].line);
-        for (int i = 0; i < points.size(); i++) window.draw(points[i]);
-        window.draw(fpsText);
+        if (showLines) for (int i = 0; i < lines.size(); i++) window.draw(lines[i].line);
+        if (showPoints) for (int i = 0; i < points.size(); i++) window.draw(points[i]);
+        window.draw(titleText);
         window.draw(phaseText);
         window.draw(debugText);
+        window.draw(controlsText);
         window.display();
 
         //FPS COUNTER
         dt = clock.restart().asSeconds();
-        fpsText.setString("FPS: "+std::to_string((int)(1.0f/dt)));
+        if (showFps) titleText.setString("Triangulator-2D | FPS: "+std::to_string((int)(1.0f/dt)));
+        else titleText.setString("Triangulator-2D");
     }
 
     return 0;
