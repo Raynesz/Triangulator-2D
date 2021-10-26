@@ -3,6 +3,9 @@
 
 #define PI 3.14159265359
 
+#include "util.h"
+#include "algorithms.h"
+
 struct Line {
     int pointA;
     int pointB;
@@ -21,9 +24,6 @@ enum PhaseIndex {One, OneHalf, Two, Three};
 void initPhases(std::vector<Phase>&);
 void createPoint(std::vector<sf::CircleShape>& points, float x, float y);
 void createLine(std::vector<sf::CircleShape>& points, std::vector<Line>& lines, LineMode lineMode);
-double calculateDistance(sf::Vector2f a, sf::Vector2f b);
-sf::Vector2f calculateMidpoint(sf::Vector2f a, sf::Vector2f b);
-double calculateLineAngle(sf::Vector2f a, sf::Vector2f b);
 
 int main()
 {
@@ -213,6 +213,14 @@ int main()
     return 0;
 }
 
+void initPhases(std::vector<Phase>& phase) {
+    std::vector<std::string> hints = { "Draw the area you want to triangulate" , "Lines must not intersect" , "Proceed to Triangulation" , "Triangulation complete" };
+    std::vector<std::string> controls = { "Left click: Place point | Right click: Erase point | Spacebar: Close loop | Backspace: Reset | Escape: Close application" ,
+        "Backspace: Reset | Escape: Close application" , "Enter: Triangulate | Backspace: Reset | Escape: Close application" ,
+        "Q: Show / Hide points | W: Show / Hide lines | E: Show / Hide triangles | Backspace: Reset | Escape: Close application" };
+    for (int i = 0; i < 4; i++) phase.push_back(Phase{ hints[i], controls[i] });
+}
+
 void createPoint(std::vector<sf::CircleShape>& points, float x, float y) {
     sf::CircleShape point(7.0f);
     point.setOrigin(7.0f, 7.0f);
@@ -237,24 +245,4 @@ void createLine(std::vector<sf::CircleShape>& points, std::vector<Line>& lines, 
         line.line = rectangle;
         lines.push_back(line);
     }
-}
-
-double calculateDistance(sf::Vector2f a, sf::Vector2f b) {
-    return sqrt(pow((a.x - b.x), 2) + pow((a.y - b.y), 2));
-}
-
-sf::Vector2f calculateMidpoint(sf::Vector2f a, sf::Vector2f b) {
-    return sf::Vector2f((b.x + a.x)/2, (b.y + a.y) / 2);
-}
-
-double calculateLineAngle(sf::Vector2f a, sf::Vector2f b) {
-    return atan2(a.y - b.y, a.x - b.x) * 180.0 / PI;
-}
-
-void initPhases(std::vector<Phase>& phase) {
-    std::vector<std::string> hints = { "Draw the area you want to triangulate" , "Lines must not intersect" , "Proceed to Triangulation" , "Triangulation complete" };
-    std::vector<std::string> controls = { "Left click: Place point | Right click: Erase point | Spacebar: Close loop | Backspace: Reset | Escape: Close application" ,
-        "Backspace: Reset | Escape: Close application" , "Enter: Triangulate | Backspace: Reset | Escape: Close application" , 
-        "Q: Show / Hide points | W: Show / Hide lines | E: Show / Hide triangles | Backspace: Reset | Escape: Close application" };
-    for (int i = 0; i < 4; i++) phase.push_back(Phase{ hints[i], controls[i] });
 }
