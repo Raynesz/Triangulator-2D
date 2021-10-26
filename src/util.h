@@ -1,5 +1,7 @@
 #pragma once
 
+#define PI 3.14159265359
+
 inline double calculateDistance(sf::Vector2f a, sf::Vector2f b) {
     return sqrt(pow((a.x - b.x), 2) + pow((a.y - b.y), 2));
 }

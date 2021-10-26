@@ -1,29 +1,4 @@
-#include "SFML/Graphics.hpp"
-#include <iostream>
-
-#define PI 3.14159265359
-
-#include "util.h"
-#include "algorithms.h"
-
-struct Line {
-    int pointA;
-    int pointB;
-    sf::RectangleShape line;
-};
-
-struct Phase {
-    std::string hint;
-    std::string controls;
-};
-
-enum LineMode {ToPrevious, ToFirst};
-
-enum PhaseIndex {One, OneHalf, Two, Three};
-
-void initPhases(std::vector<Phase>&);
-void createPoint(std::vector<sf::CircleShape>& points, float x, float y);
-void createLine(std::vector<sf::CircleShape>& points, std::vector<Line>& lines, LineMode lineMode);
+#include "main.h"
 
 int main()
 {
@@ -149,9 +124,10 @@ int main()
             }
             else if (event.type == sf::Event::KeyPressed) {
                 if (event.key.code == sf::Keyboard::Space) {
-                    if (active == One) {
+                    if (active == One && points.size() > 2) {
                         createLine(points, lines, ToFirst);
-                        active = Two;
+                        if (IntersectingLinesExist(points, lines)) active = OneHalf;
+                        else active = Two;
                     }
                 }
                 else if (event.key.code == sf::Keyboard::BackSpace) {
