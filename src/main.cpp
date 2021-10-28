@@ -136,7 +136,10 @@ int main()
                     lines.clear();
                 }
                 else if (event.key.code == sf::Keyboard::Enter) {
-                    
+                    if (active == Two) {
+                        Triangulate(points, lines);
+                        active = Three;
+                    }
                 }
                 else if (event.key.code == sf::Keyboard::Q) {
                     showPoints = !showPoints;
@@ -151,7 +154,7 @@ int main()
                     showFps = !showFps;
                 }
                 else if (event.key.code == sf::Keyboard::N) {
-                    std::cout << "Points: " << points.size() << "  |  Lines: " << lines.size() << std::endl;
+                    
                 }
                 else if (event.key.code == sf::Keyboard::M) {
                     
@@ -207,7 +210,7 @@ void createPoint(std::vector<sf::CircleShape>& points, float x, float y) {
 
 void createLine(std::vector<sf::CircleShape>& points, std::vector<Line>& lines, LineMode lineMode) {
     if (points.size() > 1) {
-        Line line{ (lineMode == ToPrevious) ? points.size() - 2 : 0 , points.size() - 1 };
+        Line line{ (lineMode == ToPrevious) ? points.size() - 2 : 0 , points.size() - 1, true };
 
         float distance = calculateDistance(points[line.pointA].getPosition(), points[line.pointB].getPosition());
         sf::Vector2f position = calculateMidpoint(points[line.pointA].getPosition(), points[line.pointB].getPosition());
@@ -220,5 +223,21 @@ void createLine(std::vector<sf::CircleShape>& points, std::vector<Line>& lines, 
         rectangle.setFillColor(sf::Color::Red);
         line.line = rectangle;
         lines.push_back(line);
+    }
+}
+
+Line createLine(std::vector<sf::CircleShape>& points, Line newLine) {
+    if (points.size() > 1) {
+        float distance = calculateDistance(points[newLine.pointA].getPosition(), points[newLine.pointB].getPosition());
+        sf::Vector2f position = calculateMidpoint(points[newLine.pointA].getPosition(), points[newLine.pointB].getPosition());
+        double angle = calculateLineAngle(points[newLine.pointA].getPosition(), points[newLine.pointB].getPosition());
+
+        sf::RectangleShape rectangle(sf::Vector2f(distance, 5.f));
+        rectangle.setOrigin(distance / 2.0f, 2.5f);
+        rectangle.setPosition(position);
+        rectangle.rotate(angle);
+        rectangle.setFillColor(sf::Color::Red);
+        newLine.line = rectangle;
+        return newLine;
     }
 }

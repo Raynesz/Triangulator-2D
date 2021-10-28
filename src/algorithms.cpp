@@ -1,11 +1,89 @@
 #include "main.h"
+/*
+for (int i = 0; i < temps.size(); i++) {
+    std::cout << "" << std::endl;
+}
+*/
+void Triangulate(std::vector<sf::CircleShape>& points, std::vector<Line>& lines) {
+    SortPoints(points, lines);
+    
+    for (int i = 0; i < points.size(); i++) {
+        for (int j = 0; j < i; j++) {
+            bool keep = true;
+            Line temp{ i , j, false};
+            for (auto line : lines) {
+                if (LinesAreEqual(line, temp)) {
+                    keep = false;
+                    break;
+                }
+                if (LinesShareAPoint(line, temp)) continue;
+                if (doIntersect(points[line.pointA].getPosition(), points[line.pointB].getPosition(),
+                    points[temp.pointA].getPosition(), points[temp.pointB].getPosition())) {
+                    keep = false;
+                    break;
+                }
+            }
+            if (LineLiesOutside(points, lines, temp)) keep = false;
+            if (keep) lines.push_back(createLine(points, temp));
+        }
+    }
+}
 
-void Triangulate() {
+bool LineLiesOutside(std::vector<sf::CircleShape>& points, std::vector<Line>& lines, Line line) {
+    int count = 0;
+    sf::Vector2f midPoint = calculateMidpoint(points[line.pointA].getPosition(), points[line.pointB].getPosition());
+    for (auto lineIter : lines) {
+        if (lineIter.hull && doIntersect(sf::Vector2f{0, midPoint.y}, midPoint, points[lineIter.pointA].getPosition(), points[lineIter.pointB].getPosition())) count++;
+    }
+    if (count % 2 == 0) return true;
+    else return false;
+}
 
+bool LinesShareAPoint(Line a, Line b) {
+    if (a.pointA == b.pointA || a.pointA == b.pointB) return true;
+    if (a.pointB == b.pointA || a.pointB == b.pointB) return true;
+    return false;
 }
 
 void DetectTriangle() {
 
+}
+
+bool LinesAreEqual(Line a, Line b) {
+    if ((a.pointA == b.pointA && a.pointB == b.pointB) ||
+        (a.pointA == b.pointB && a.pointB == b.pointA)) return true;
+    else return false;
+}
+
+void SortPoints(std::vector<sf::CircleShape>& points, std::vector<Line>& lines) {
+    std::vector<SortTemp> temps = {};
+    for (int i = 0; i < points.size(); i++) {
+        temps.push_back(SortTemp{i, points[i].getPosition().x});
+    }
+
+    sort(temps.begin(), temps.end(), [](const auto& lhs, const auto& rhs) { return lhs.x < rhs.x; });
+    sort(points.begin(), points.end(), [](const auto& lhs, const auto& rhs) { return lhs.getPosition().x < rhs.getPosition().x; });
+
+    std::vector<Line> newLines = {};
+
+    for (auto line : lines) {
+        bool aChanged = false;
+        bool bChanged = false;
+        for (int i = 0; i < temps.size(); i++) {
+            if (!aChanged && line.pointA == temps[i].index) {
+                line.pointA = i;
+                aChanged = true;
+            }
+            if (!bChanged && line.pointB == temps[i].index) {
+                line.pointB = i;
+                bChanged = true;
+            }
+        }
+        newLines.push_back(createLine(points, line));
+    }
+
+    lines.clear();
+    lines = newLines;
 }
 
 bool IntersectingLinesExist(std::vector<sf::CircleShape>& points, std::vector<Line>& lines) {
