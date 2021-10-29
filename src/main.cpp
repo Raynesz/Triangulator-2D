@@ -19,6 +19,7 @@ int main()
     // Initialize vectors containing the primitives
     std::vector<sf::CircleShape> points = {};
     std::vector<Line> lines = {};
+    std::vector<Triangle> triangles = {};
 
     // Header
     sf::RectangleShape header(sf::Vector2f(screenWidth, 50.f));
@@ -47,7 +48,7 @@ int main()
 
     sf::Text devText;
     devText.setFont(font);
-    devText.setString("<> by raynesz.dev w/ SFML");
+    devText.setString("made by raynesz.dev w/ SFML");
     devText.setCharacterSize(24);
     devText.setFillColor(sf::Color::White);
     devText.setOrigin(devText.getLocalBounds().width, devText.getLocalBounds().height / 2);
@@ -60,13 +61,13 @@ int main()
     fpsText.setString("FPS: 0");
     fpsText.setPosition(10, 50);
 
-    sf::Text debugText;
-    debugText.setFont(font);
-    debugText.setCharacterSize(24);
-    debugText.setFillColor(sf::Color::White);
-    debugText.setString("Points: " + std::to_string(points.size()) + "  |  Lines: " + std::to_string(lines.size()));
-    debugText.setOrigin(0, debugText.getLocalBounds().height);
-    debugText.setPosition(10, screenHeight-60);
+    sf::Text infoText;
+    infoText.setFont(font);
+    infoText.setCharacterSize(24);
+    infoText.setFillColor(sf::Color::White);
+    infoText.setString("Points: " + std::to_string(points.size()) + "  |  Lines: " + std::to_string(lines.size()) + "  |  Triangles: " + std::to_string(triangles.size()));
+    infoText.setOrigin(0, infoText.getLocalBounds().height);
+    infoText.setPosition(10, screenHeight-60);
 
     sf::Text hintText;
     hintText.setFont(font);
@@ -88,7 +89,8 @@ int main()
     bool showPoints = true;
     bool showLines = true;
     bool showTriangles = true;
-    bool showFps = true;
+    bool showFps = false;
+    bool showInfo = false;
 
     while (window.isOpen())
     {
@@ -120,7 +122,7 @@ int main()
                         if (!points.empty()) points.pop_back();
                     }
                 }
-                debugText.setString("Points: " + std::to_string(points.size()) + "  |  Lines: " + std::to_string(lines.size()));
+                infoText.setString("Points: " + std::to_string(points.size()) + "  |  Lines: " + std::to_string(lines.size()) + "  |  Triangles: " + std::to_string(triangles.size()));
             }
             else if (event.type == sf::Event::KeyPressed) {
                 if (event.key.code == sf::Keyboard::Space) {
@@ -134,30 +136,31 @@ int main()
                     active = One;
                     points.clear();
                     lines.clear();
+                    triangles.clear();
+                    showPoints = true;
+                    showLines = true;
+                    showTriangles = true;
                 }
                 else if (event.key.code == sf::Keyboard::Enter) {
                     if (active == Two) {
-                        Triangulate(points, lines);
+                        triangles = Triangulate(points, lines);
                         active = Three;
                     }
                 }
                 else if (event.key.code == sf::Keyboard::Q) {
-                    showPoints = !showPoints;
+                    if (active == Three) showPoints = !showPoints;
                 }
                 else if (event.key.code == sf::Keyboard::W) {
-                    showLines = !showLines;
+                    if (active == Three) showLines = !showLines;
                 }
                 else if (event.key.code == sf::Keyboard::E) {
-                    showTriangles = !showTriangles;
+                    if (active == Three) showTriangles = !showTriangles;
                 }
                 else if (event.key.code == sf::Keyboard::F) {
                     showFps = !showFps;
                 }
-                else if (event.key.code == sf::Keyboard::N) {
-                    
-                }
-                else if (event.key.code == sf::Keyboard::M) {
-                    
+                else if (event.key.code == sf::Keyboard::I) {
+                    showInfo = !showInfo;
                 }
                 else if (event.key.code == sf::Keyboard::Escape) {
                     window.close();
@@ -166,12 +169,13 @@ int main()
                 controlsText.setString(phase[active].controls);
                 hintText.setOrigin(hintText.getLocalBounds().width / 2, hintText.getLocalBounds().height / 2);
                 controlsText.setOrigin(controlsText.getLocalBounds().width / 2, controlsText.getLocalBounds().height / 2);
-                debugText.setString("Points: " + std::to_string(points.size()) + "  |  Lines: " + std::to_string(lines.size()));
+                infoText.setString("Points: " + std::to_string(points.size()) + "  |  Lines: " + std::to_string(lines.size()) + "  |  Triangles: " + std::to_string(triangles.size()));
             }
         }
         
         // RENDER
         window.clear(sf::Color(18, 33, 43)); // Color background
+        if (showTriangles) for (int i = 0; i < triangles.size(); i++) window.draw(triangles[i].triangle);
         if (showLines) for (int i = 0; i < lines.size(); i++) window.draw(lines[i].line);
         if (showPoints) for (int i = 0; i < points.size(); i++) window.draw(points[i]);
         window.draw(header);
@@ -180,7 +184,7 @@ int main()
         window.draw(hintText);
         window.draw(devText);
         if (showFps) window.draw(fpsText);
-        window.draw(debugText);
+        if (showInfo) window.draw(infoText);
         window.draw(controlsText);
         window.display();
 
@@ -240,4 +244,19 @@ Line createLine(std::vector<sf::CircleShape>& points, Line newLine) {
         newLine.line = rectangle;
         return newLine;
     }
+}
+
+std::vector<Triangle> createTriangles(std::vector<sf::CircleShape>& points, std::vector<Triangle> newTrianglesIn) {
+    std::vector<Triangle> newTrianglesOut = {};
+    for (int i = 0; i < newTrianglesIn.size(); i++) {
+        sf::ConvexShape convex;
+        convex.setPointCount(3);
+        convex.setPoint(0, points[newTrianglesIn[i].pointA].getPosition());
+        convex.setPoint(1, points[newTrianglesIn[i].pointB].getPosition());
+        convex.setPoint(2, points[newTrianglesIn[i].pointC].getPosition());
+        convex.setFillColor(sf::Color(0, 190, 252));
+        newTrianglesIn[i].triangle = convex;
+        newTrianglesOut.push_back(newTrianglesIn[i]);
+    }
+    return newTrianglesOut;
 }

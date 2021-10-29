@@ -1,22 +1,22 @@
 #include "main.h"
-/*
-for (int i = 0; i < temps.size(); i++) {
-    std::cout << "" << std::endl;
-}
-*/
-void Triangulate(std::vector<sf::CircleShape>& points, std::vector<Line>& lines) {
+
+std::vector<Triangle> Triangulate(std::vector<sf::CircleShape>& points, std::vector<Line>& lines) {
     SortPoints(points, lines);                      // Sort the points in ascending x-coordinate order (left to right)
-    
+    std::vector<Triangle> triangles = {};
     for (int i = 0; i < points.size(); i++) {       // For every i point starting from left to right...
         for (int j = 0; j < i; j++) {               // ... and for every j point up to i...
             Line temp{ i , j, false};               // ... we create a line.
             bool keep = true;                       // Variable that will tell whether we will keep the line or discard it
-            for (auto& line : lines) {               // For every line in the graph...
+            std::vector<Line> nhLines = {};         // Container holding the lines neighbouring our temp line
+            for (auto& line : lines) {              // For every line in the graph...
                 if (LinesAreEqual(line, temp)) {    // ... do those 2 lines match?
                     keep = false;                   // If yes, then discard.
                     break;
                 }
-                if (LinesShareAPoint(line, temp)) continue;         // If Those 2 lines have a common point then they cannot intersect.
+                if (LinesShareAPoint(line, temp)) {
+                    nhLines.push_back(line);
+                    continue;         // If Those 2 lines have a common point then they cannot intersect.
+                }
                 if (doIntersect(points[line.pointA].getPosition(), points[line.pointB].getPosition(),   // If those 2 lines intersect...
                     points[temp.pointA].getPosition(), points[temp.pointB].getPosition())) {
                     keep = false;                                   // ... then discard.
@@ -24,9 +24,14 @@ void Triangulate(std::vector<sf::CircleShape>& points, std::vector<Line>& lines)
                 }
             }
             if (LineLiesOutside(points, lines, temp)) keep = false;     // If that line exists outside the area we want to triangulate then discard.
-            if (keep) lines.push_back(createLine(points, temp));        // If that line passed the above tests, then we shall keep it.
+            if (keep) {                                                 // If that line passed the above tests,...
+                lines.push_back(createLine(points, temp));              // ... then we shall keep it.
+                std::vector<Triangle> newTriangles = createTriangles(points, DetectTriangles(i, j, nhLines, points.size()));
+                triangles.insert(std::end(triangles), std::begin(newTriangles), std::end(newTriangles));
+            }
         }
     }
+    return triangles;
 }
 
 // This function sorts all points from left to right (Ascending x-coordinates) and rearranges the line point indices
@@ -98,8 +103,22 @@ bool IntersectingLinesExist(std::vector<sf::CircleShape>& points, std::vector<Li
     return false;
 }
 
-void DetectTriangle() {
+std::vector<Triangle> DetectTriangles(int i, int j, std::vector<Line> nhLines, int totalPoints) {
+    std::vector<Triangle> newTriangles = {};
+    std::vector<int> pointsCount(totalPoints);
+    fill(pointsCount.begin(), pointsCount.end(), 0);
 
+    for (auto& line : nhLines) {
+        pointsCount[line.pointA]++;
+        pointsCount[line.pointB]++;
+    }
+
+    for (int iter = 0; iter < pointsCount.size(); iter++) {
+        if (iter == i || iter == j) continue;
+        if (pointsCount[iter] > 1) newTriangles.push_back(Triangle{i, j, iter});
+    }
+
+    return newTriangles;
 }
 
 // Functions that help detect if two line segments intersect (taken by geeksforgeeks.org)
