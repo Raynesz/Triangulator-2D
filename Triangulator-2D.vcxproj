@@ -114,9 +114,7 @@
       <ProgramDatabaseFile>$(SolutionDir)$(Platform)\$(Configuration)\</ProgramDatabaseFile>
     </Link>
     <PreBuildEvent>
-      <Command>copy /Y "$(SolutionDir)Libraries\dll\openal32.dll" "$(TargetDir)"
-copy /Y "$(SolutionDir)Libraries\dll\sfml-audio-d-2.dll" "$(TargetDir)"
-copy /Y "$(SolutionDir)Libraries\dll\sfml-graphics-d-2.dll" "$(TargetDir)"
+      <Command>copy /Y "$(SolutionDir)Libraries\dll\sfml-graphics-d-2.dll" "$(TargetDir)"
 copy /Y "$(SolutionDir)Libraries\dll\sfml-window-d-2.dll" "$(TargetDir)"
 copy /Y "$(SolutionDir)Libraries\dll\sfml-system-d-2.dll" "$(TargetDir)"
 copy /Y "$(SolutionDir)src\RussoOne-Regular.ttf" "$(TargetDir)"</Command>
@@ -140,9 +138,7 @@ copy /Y "$(SolutionDir)src\RussoOne-Regular.ttf" "$(TargetDir)"</Command>
       <ProgramDatabaseFile>$(SolutionDir)$(Platform)\$(Configuration)\</ProgramDatabaseFile>
     </Link>
     <PreBuildEvent>
-      <Command>copy /Y "$(SolutionDir)Libraries\dll\openal32.dll" "$(TargetDir)"
-copy /Y "$(SolutionDir)Libraries\dll\sfml-audio-2.dll" "$(TargetDir)"
-copy /Y "$(SolutionDir)Libraries\dll\sfml-graphics-2.dll" "$(TargetDir)"
+      <Command>copy /Y "$(SolutionDir)Libraries\dll\sfml-graphics-2.dll" "$(TargetDir)"
 copy /Y "$(SolutionDir)Libraries\dll\sfml-window-2.dll" "$(TargetDir)"
 copy /Y "$(SolutionDir)Libraries\dll\sfml-system-2.dll" "$(TargetDir)"
 copy /Y "$(SolutionDir)src\RussoOne-Regular.ttf" "$(TargetDir)"</Command>
@@ -162,9 +158,7 @@ copy /Y "$(SolutionDir)src\RussoOne-Regular.ttf" "$(TargetDir)"</Command>
       <ProgramDatabaseFile>$(SolutionDir)$(Platform)\$(Configuration)\</ProgramDatabaseFile>
     </Link>
     <PreBuildEvent>
-      <Command>copy /Y "$(SolutionDir)Libraries\dll\openal32.dll" "$(TargetDir)"
-copy /Y "$(SolutionDir)Libraries\dll\sfml-audio-d-2.dll" "$(TargetDir)"
-copy /Y "$(SolutionDir)Libraries\dll\sfml-graphics-d-2.dll" "$(TargetDir)"
+      <Command>copy /Y "$(SolutionDir)Libraries\dll\sfml-graphics-d-2.dll" "$(TargetDir)"
 copy /Y "$(SolutionDir)Libraries\dll\sfml-window-d-2.dll" "$(TargetDir)"
 copy /Y "$(SolutionDir)Libraries\dll\sfml-system-d-2.dll" "$(TargetDir)"
 copy /Y "$(SolutionDir)src\RussoOne-Regular.ttf" "$(TargetDir)"</Command>
@@ -188,9 +182,7 @@ copy /Y "$(SolutionDir)src\RussoOne-Regular.ttf" "$(TargetDir)"</Command>
       <ProgramDatabaseFile>$(SolutionDir)$(Platform)\$(Configuration)\</ProgramDatabaseFile>
     </Link>
     <PreBuildEvent>
-      <Command>copy /Y "$(SolutionDir)Libraries\dll\openal32.dll" "$(TargetDir)"
-copy /Y "$(SolutionDir)Libraries\dll\sfml-audio-2.dll" "$(TargetDir)"
-copy /Y "$(SolutionDir)Libraries\dll\sfml-graphics-2.dll" "$(TargetDir)"
+      <Command>copy /Y "$(SolutionDir)Libraries\dll\sfml-graphics-2.dll" "$(TargetDir)"
 copy /Y "$(SolutionDir)Libraries\dll\sfml-window-2.dll" "$(TargetDir)"
 copy /Y "$(SolutionDir)Libraries\dll\sfml-system-2.dll" "$(TargetDir)"
 copy /Y "$(SolutionDir)src\RussoOne-Regular.ttf" "$(TargetDir)"</Command>
@@ -202,7 +194,14 @@ copy /Y "$(SolutionDir)src\RussoOne-Regular.ttf" "$(TargetDir)"</Command>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\main.h" />
+    <ClInclude Include="src\resources\resource.h" />
     <ClInclude Include="src\util.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="src\resources\Triangulator-2D.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="src\resources\appIcon.ico" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
