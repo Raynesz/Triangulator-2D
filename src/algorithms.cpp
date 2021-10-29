@@ -5,60 +5,35 @@ for (int i = 0; i < temps.size(); i++) {
 }
 */
 void Triangulate(std::vector<sf::CircleShape>& points, std::vector<Line>& lines) {
-    SortPoints(points, lines);
+    SortPoints(points, lines);                      // Sort the points in ascending x-coordinate order (left to right)
     
-    for (int i = 0; i < points.size(); i++) {
-        for (int j = 0; j < i; j++) {
-            bool keep = true;
-            Line temp{ i , j, false};
-            for (auto line : lines) {
-                if (LinesAreEqual(line, temp)) {
-                    keep = false;
+    for (int i = 0; i < points.size(); i++) {       // For every i point starting from left to right...
+        for (int j = 0; j < i; j++) {               // ... and for every j point up to i...
+            Line temp{ i , j, false};               // ... we create a line.
+            bool keep = true;                       // Variable that will tell whether we will keep the line or discard it
+            for (auto& line : lines) {               // For every line in the graph...
+                if (LinesAreEqual(line, temp)) {    // ... do those 2 lines match?
+                    keep = false;                   // If yes, then discard.
                     break;
                 }
-                if (LinesShareAPoint(line, temp)) continue;
-                if (doIntersect(points[line.pointA].getPosition(), points[line.pointB].getPosition(),
+                if (LinesShareAPoint(line, temp)) continue;         // If Those 2 lines have a common point then they cannot intersect.
+                if (doIntersect(points[line.pointA].getPosition(), points[line.pointB].getPosition(),   // If those 2 lines intersect...
                     points[temp.pointA].getPosition(), points[temp.pointB].getPosition())) {
-                    keep = false;
+                    keep = false;                                   // ... then discard.
                     break;
                 }
             }
-            if (LineLiesOutside(points, lines, temp)) keep = false;
-            if (keep) lines.push_back(createLine(points, temp));
+            if (LineLiesOutside(points, lines, temp)) keep = false;     // If that line exists outside the area we want to triangulate then discard.
+            if (keep) lines.push_back(createLine(points, temp));        // If that line passed the above tests, then we shall keep it.
         }
     }
 }
 
-bool LineLiesOutside(std::vector<sf::CircleShape>& points, std::vector<Line>& lines, Line line) {
-    int count = 0;
-    sf::Vector2f midPoint = calculateMidpoint(points[line.pointA].getPosition(), points[line.pointB].getPosition());
-    for (auto lineIter : lines) {
-        if (lineIter.hull && doIntersect(sf::Vector2f{0, midPoint.y}, midPoint, points[lineIter.pointA].getPosition(), points[lineIter.pointB].getPosition())) count++;
-    }
-    if (count % 2 == 0) return true;
-    else return false;
-}
-
-bool LinesShareAPoint(Line a, Line b) {
-    if (a.pointA == b.pointA || a.pointA == b.pointB) return true;
-    if (a.pointB == b.pointA || a.pointB == b.pointB) return true;
-    return false;
-}
-
-void DetectTriangle() {
-
-}
-
-bool LinesAreEqual(Line a, Line b) {
-    if ((a.pointA == b.pointA && a.pointB == b.pointB) ||
-        (a.pointA == b.pointB && a.pointB == b.pointA)) return true;
-    else return false;
-}
-
+// This function sorts all points from left to right (Ascending x-coordinates) and rearranges the line point indices
 void SortPoints(std::vector<sf::CircleShape>& points, std::vector<Line>& lines) {
     std::vector<SortTemp> temps = {};
     for (int i = 0; i < points.size(); i++) {
-        temps.push_back(SortTemp{i, points[i].getPosition().x});
+        temps.push_back(SortTemp{ i, points[i].getPosition().x });
     }
 
     sort(temps.begin(), temps.end(), [](const auto& lhs, const auto& rhs) { return lhs.x < rhs.x; });
@@ -66,7 +41,7 @@ void SortPoints(std::vector<sf::CircleShape>& points, std::vector<Line>& lines) 
 
     std::vector<Line> newLines = {};
 
-    for (auto line : lines) {
+    for (auto& line : lines) {
         bool aChanged = false;
         bool bChanged = false;
         for (int i = 0; i < temps.size(); i++) {
@@ -86,6 +61,30 @@ void SortPoints(std::vector<sf::CircleShape>& points, std::vector<Line>& lines) 
     lines = newLines;
 }
 
+bool LineLiesOutside(std::vector<sf::CircleShape>& points, std::vector<Line>& lines, Line line) {
+    int count = 0;
+    sf::Vector2f midPoint = calculateMidpoint(points[line.pointA].getPosition(), points[line.pointB].getPosition());
+    for (auto& lineIter : lines) {
+        if (lineIter.hull && doIntersect(sf::Vector2f{ 0, midPoint.y }, midPoint, points[lineIter.pointA].getPosition(), points[lineIter.pointB].getPosition())) {
+            count++;
+        }
+    }
+    if (count % 2 == 0) return true;
+    else return false;
+}
+
+bool LinesShareAPoint(Line a, Line b) {
+    if (a.pointA == b.pointA || a.pointA == b.pointB) return true;
+    if (a.pointB == b.pointA || a.pointB == b.pointB) return true;
+    return false;
+}
+
+bool LinesAreEqual(Line a, Line b) {
+    if ((a.pointA == b.pointA && a.pointB == b.pointB) ||
+        (a.pointA == b.pointB && a.pointB == b.pointA)) return true;
+    else return false;
+}
+
 bool IntersectingLinesExist(std::vector<sf::CircleShape>& points, std::vector<Line>& lines) {
     for (int i = 0; i < lines.size(); i++) {
         for (int j = i; j < lines.size(); j++) {
@@ -97,6 +96,10 @@ bool IntersectingLinesExist(std::vector<sf::CircleShape>& points, std::vector<Li
         }
     }
     return false;
+}
+
+void DetectTriangle() {
+
 }
 
 // Functions that help detect if two line segments intersect (taken by geeksforgeeks.org)

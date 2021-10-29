@@ -110,7 +110,7 @@ int main()
                         sf::Vector2i position = sf::Mouse::getPosition();
                         if (position.y > 50 && position.y < (screenHeight - 50)) {
                             createPoint(points, position.x, position.y);
-                            if (points.size() > 1) createLine(points, lines, ToPrevious);
+                            createLine(points, lines, ToPrevious);
                         }
                     }
                 }
@@ -126,7 +126,7 @@ int main()
                 if (event.key.code == sf::Keyboard::Space) {
                     if (active == One && points.size() > 2) {
                         createLine(points, lines, ToFirst);
-                        if (IntersectingLinesExist(points, lines)) active = OneHalf;
+                        if (IntersectingLinesExist(points, lines)) active = OneHalf;    // Make sure no lines intersect.
                         else active = Two;
                     }
                 }
