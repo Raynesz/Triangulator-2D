@@ -1,8 +1,17 @@
 #include "main.h"
 
 std::vector<Triangle> Triangulate(std::vector<sf::CircleShape>& points, std::vector<Line>& lines) {
-    SortPoints(points, lines);                      // Sort the points in ascending x-coordinate order (left to right)
     std::vector<Triangle> triangles = {};
+
+    if (points.size() == 3) {                       // Handle the special case where there are only 3 points
+        std::vector<Triangle> triangle = { Triangle{ 0, 1, 2 } };
+        std::vector<Triangle> newTriangles = createTriangles(points, triangle);
+        triangles.insert(std::end(triangles), std::begin(newTriangles), std::end(newTriangles));
+        return triangles;
+    }
+
+    SortPoints(points, lines);                      // Sort the points in ascending x-coordinate order (left to right)
+
     for (int i = 0; i < points.size(); i++) {       // For every i point starting from left to right...
         for (int j = 0; j < i; j++) {               // ... and for every j point up to i...
             Line temp{ i , j, false};               // ... we create a line.
@@ -115,7 +124,7 @@ std::vector<Triangle> DetectTriangles(int i, int j, std::vector<Line> nhLines, i
 
     for (int iter = 0; iter < pointsCount.size(); iter++) {
         if (iter == i || iter == j) continue;
-        if (pointsCount[iter] > 1) newTriangles.push_back(Triangle{i, j, iter});
+        if (pointsCount[iter] > 1) newTriangles.push_back(Triangle{ i, j, iter });
     }
 
     return newTriangles;
